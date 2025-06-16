@@ -270,8 +270,7 @@ ${context.summary}
   <li>Never mention Groq, OpenAI, APIs, or models</li>
 </ul>
 
-End replies with:
-<strong>“Would you like to know more about the franchise opprtunity or anything. change  this based on  what the user might be having in his mind? 😊”</strong>
+
   `.trim();
 
   const messages = [
