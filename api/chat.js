@@ -283,7 +283,7 @@ End replies with:
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": "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",
+        "Authorization": "Bearer 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",
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
