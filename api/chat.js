@@ -299,7 +299,8 @@ ${context.summary}
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": "Bearer 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",
+        "Authorization": `Bearer ${process.env.GROQ_API_KEY}`,
+
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
