@@ -1,62 +1,149 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
   <title>Occultedge AI Assistant</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f5f7fa;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
       margin: 0;
       padding: 0;
+      height: 100vh;
+      background: linear-gradient(135deg, #1a73e8, #0f9d58);
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      animation: fadeIn 1s ease-in;
     }
+
     .chatbox {
-      background: white;
-      padding: 20px;
+      background: #fff;
       width: 95%;
       max-width: 600px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      animation: popIn 0.5s ease-out;
     }
+
+    .chat-header {
+      text-align: center;
+      font-size: 1.1em;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #1a73e8;
+    }
+
     #chat {
       height: 400px;
       overflow-y: auto;
-      border: 1px solid #ccc;
-      padding: 10px;
-      margin-bottom: 10px;
-      background: #fefefe;
-      border-radius: 8px;
+      padding: 12px;
+      background: #f9f9f9;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      scroll-behavior: smooth;
     }
-    .msg { margin: 10px 0; }
-    .user { color: #1a73e8; }
-    .bot { color: #0f9d58; }
-    form { display: flex; gap: 10px; }
+
+    .msg {
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 0.95em;
+      max-width: 80%;
+      word-wrap: break-word;
+      animation: slideUp 0.3s ease-in-out;
+    }
+
+    .user {
+      background-color: #e3f0fe;
+      color: #1a73e8;
+      align-self: flex-end;
+    }
+
+    .bot {
+      background-color: #e6f4ea;
+      color: #0f9d58;
+      align-self: flex-start;
+    }
+
+    form {
+      display: flex;
+      gap: 10px;
+    }
+
     input[type="text"] {
       flex: 1;
-      padding: 10px;
-      border-radius: 6px;
+      padding: 12px;
+      border-radius: 10px;
       border: 1px solid #ccc;
+      font-size: 1em;
+      outline: none;
+      transition: border 0.2s ease;
     }
+
+    input[type="text"]:focus {
+      border-color: #1a73e8;
+    }
+
     button {
       background: #1a73e8;
       color: white;
       border: none;
-      padding: 10px 16px;
-      border-radius: 6px;
+      padding: 12px 20px;
+      border-radius: 10px;
       cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #1558b0;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(10px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: #ccc;
+      border-radius: 3px;
     }
   </style>
-  <!-- ✅ Include DOMPurify to safely render AI's HTML -->
+
+  <!-- ✅ Safe HTML rendering -->
   <script src="https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js"></script>
 </head>
+
 <body>
   <div class="chatbox">
+    <div class="chat-header">
+      Talk to your personalized AI assistant here<br>
+      and get <b>instant answers</b> to all your Franchise related queries at once.
+    </div>
     <div id="chat"></div>
     <form id="chatForm">
-      <input type="text" id="userInput" placeholder="Type here..." required />
+      <input type="text" id="userInput" placeholder="Ask me anything..." required />
       <button type="submit">Send</button>
     </form>
   </div>
@@ -66,7 +153,6 @@
     const input = document.getElementById('userInput');
     const chat = document.getElementById('chat');
 
-    // 🔍 Detect site type based on URL
     function detectSiteType() {
       const url = window.location.href.toLowerCase();
       if (url.includes("tutor")) return "tutor";
@@ -76,22 +162,12 @@
       return "general";
     }
 
-    // 📤 Handle message submit
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const msg = input.value.trim();
       if (!msg) return;
 
       chat.innerHTML += `<div class="msg user"><b>You:</b> ${msg}</div>`;
-      // Intercept link clicks inside the bot reply
-const botLinks = chat.querySelectorAll('.msg.bot a');
-botLinks.forEach(link => {
-  link.addEventListener('click', function(e) {
-    e.preventDefault();
-    window.open(this.href, '_blank');
-  });
-});
-
       input.value = '';
       chat.scrollTop = chat.scrollHeight;
 
@@ -107,7 +183,7 @@ botLinks.forEach(link => {
         });
 
         const data = await res.json();
-        const safeHTML = DOMPurify.sanitize(data.reply); // ✅ Sanitize AI HTML
+        const safeHTML = DOMPurify.sanitize(data.reply);
         chat.innerHTML += `<div class="msg bot"><b>AI:</b> ${safeHTML}</div>`;
         chat.scrollTop = chat.scrollHeight;
 
@@ -115,22 +191,14 @@ botLinks.forEach(link => {
         chat.innerHTML += `<div class="msg bot"><b>AI:</b> Error: ${err.message}</div>`;
       }
     });
+
+    document.addEventListener('click', function(e) {
+      const target = e.target.closest('a');
+      if (target && target.href) {
+        e.preventDefault();
+        window.open(target.href, '_blank', 'noopener,noreferrer');
+      }
+    });
   </script>
-  <!-- Your chatbot HTML above -->
-
-<!-- Safe link-click script -->
-<script>
-  document.addEventListener('click', function(e) {
-    const target = e.target.closest('a');
-    if (target && target.href) {
-      e.preventDefault();
-      window.open(target.href, '_blank', 'noopener,noreferrer');
-    }
-  });
-</script>
-
-</body>
-</html>
-
 </body>
 </html>
